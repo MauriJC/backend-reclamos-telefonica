@@ -16,7 +16,7 @@ Service.init(
     },
     line_number: {
       type: Sequelize.BIGINT,
-      allowNull: false
+      allowNull: false,
     },
     service_number: {
       type: Sequelize.INTEGER,
@@ -91,7 +91,8 @@ Client.init(
     },
     dni: {
       type: Sequelize.BIGINT,
-      allowNull: false
+      allowNull: false,
+      unique:true
     },
     contact_number: {
       type: Sequelize.BIGINT,
@@ -138,11 +139,11 @@ Location.init(
       allowNull: false
     },
     latitude: {
-      type: DataTypes.DECIMAL(9, 5),
+      type: Sequelize.DECIMAL(9, 5),
       allowNull: true
     },
     longitude: {
-      type: DataTypes.DECIMAL(9, 5),
+      type: Sequelize.DECIMAL(9, 5),
       allowNull: true
     }
   },
@@ -196,8 +197,13 @@ Employee.init(
       type: Sequelize.BIGINT,
       allowNull: false
     },
+  },
+  {
+    sequelize,
+    modelName: 'Employee'
   }
 );
+
 
 
 class User extends Sequelize.Model { }
@@ -569,106 +575,92 @@ Service_data.init(
 
 
 
+//Relaciones
+
+// Service MtoM and 1to1
+Service.hasMany(Claim, { foreignKey: 'id_service' });
+Claim.belongsTo(Service, { foreignKey: 'id_service' });
+
+Service.hasMany(Comodato, { foreignKey: 'id_service' });
+Comodato.belongsTo(Service, { foreignKey: 'id_service' });
+
+Service.hasMany(Installation, { foreignKey: 'id_service' });
+Installation.belongsTo(Service, { foreignKey: 'id_service' });
+
+Service.hasOne(Service_data, { foreignKey: 'id_service' });
+Service_data.belongsTo(Service, { foreignKey: 'id_service' });
+
+Service.hasOne(Location, { foreignKey: 'id_service' });
+Location.belongsTo(Service, { foreignKey: 'id_service' });
+
+// 1 to many to service
+Service_type.hasMany(Service, { foreignKey: 'id_service_type' });
+Service.belongsTo(Service_type, { foreignKey: 'id_service_type' });
+
+Service_status.hasMany(Service, { foreignKey: 'id_service_status' });
+Service.belongsTo(Service_status, { foreignKey: 'id_service_status' });
+
+Client.hasMany(Service, { foreignKey: 'id_client' });
+Service.belongsTo(Client, { foreignKey: 'id_client' });
+
+
+// Claim
+Claim.hasMany(Visit, { foreignKey: 'id_claim' });
+Visit.belongsTo(Claim, { foreignKey: 'id_claim' });
+
+Claim.hasOne(Close_without_visit, { foreignKey: 'id_claim' });
+Close_without_visit.belongsTo(Claim, { foreignKey: 'id_claim' });
+
+Claim.hasOne(Claim_attention, { foreignKey: 'id_claim' });
+Claim_attention.belongsTo(Claim, { foreignKey: 'id_claim' });
 
 
 
-
-Profile.hasMany(Contract, { as: 'Contractor', foreignKey: 'ContractorId' })
-Contract.belongsTo(Profile, { as: 'Contractor' })
-Profile.hasMany(Contract, { as: 'Client', foreignKey: 'ClientId' })
-Contract.belongsTo(Profile, { as: 'Client' })
-Contract.hasMany(Job)
-Job.belongsTo(Contract)
+// Installation
+Installation.hasMany(Used_materials_installation, { foreignKey: 'id_installation' });
+Used_materials_installation.belongsTo(Installation, { foreignKey: 'id_installation' });
 
 
-//Aca hago mis relaciones
 
-//Service MtoM and 1to1
-Service.hasMany(Claim)
-Claim.belongsTo(Service)
-
-Service.hasMany(Comodato)
-Comodato.belongsTo(Service)
-
-Service.hasMany(Installation)
-Installation.belongsTo(Service)
-
-Service.hasOne(Service_data)
-Service_data.belongsTo(Service)
-
-Service.hasOne(Location)
-Location.belongsTo(Location)
-
-//1 to many to service
-Service_type.hasMany(Service)
-Service.belongsTo(Service_type)
-
-Service_status.hasMany(Service)
-Service.belongsTo(Service_status)
-
-Client.hasMany(Service)
-Service.belongsTo(Client)
+Installation.hasMany(Installation_visit, { foreignKey: 'id_installation' });
+Installation_visit.belongsTo(Installation, { foreignKey: 'id_installation' });
 
 
-//Claim
-Claim.hasMany(Visit)
-Visit.belongsTo(Claim)
+// Claim Attention
+Claim_attention.hasMany(Used_materials_attention, { foreignKey: 'id_claim_attention' });
+Used_materials_attention.belongsTo(Claim_attention, { foreignKey: 'id_claim_attention' });
 
-Claim.hasOne(Close_without_visit)
-Close_without_visit.belongsTo(Claim)
+// Materials
+Material.hasMany(Used_materials_attention, { foreignKey: 'id_material' });
+Used_materials_attention.belongsTo(Material, { foreignKey: 'id_material' });
 
-Claim.hasOne(Claim_attention)
-Claim_attention.belongsTo(Claim)
+Material.hasMany(Used_materials_installation, { foreignKey: 'id_material' });
+Used_materials_installation.belongsTo(Material, { foreignKey: 'id_material' });
 
-Claim.hasOne(Mobile)
-Mobile.belongsTo(Claim)
+// Mobiles
+Mobile.hasOne(Vehicle, { foreignKey: 'id_mobile' });
+Vehicle.belongsTo(Mobile, { foreignKey: 'id_mobile' });
 
-//Installation
-Installation.hasMany(Used_materials_installation)
-Used_materials_installation.belongsTo(Installation)
+Mobile.hasMany(User, { foreignKey: 'id_mobile' });
+User.belongsTo(Mobile, { foreignKey: 'id_mobile' });
 
-Installation.hasOne(Mobile)
-Mobile.belongsTo(Installation)
+Mobile.hasMany(Claim, { foreignKey: 'id_mobile' });
+Claim.belongsTo(Mobile, { foreignKey: 'id_mobile' });
 
-Installation.hasMany(Installation_visit)
-Installation_visit.belongsTo(Installation)
-
-
-//Claim Attention
-Claim_attention.hasMany(Used_materials_attention)
-Used_materials_attention.belongsTo(Claim_attention)
-
-//Materials
-Material.hasMany(Used_materials_attention)
-Used_materials_attention.belongsTo(Material)
-
-Material.hasMany(Used_materials_installation)
-Used_materials_installation.belongsTo(Material)
-
-//Mobiles
-Mobile.hasOne(Vehicle)
-Vehicle.belongsTo(Mobile)
-
-Mobile.hasMany(User)
-User.belongsTo(Mobile)
+Mobile.hasMany(Installation,{foreignKey:'id_mobile'});
+Installation.belongsTo(Mobile,{foreignKey:'id_mobile'});
+// User
+User.hasOne(Employee, { foreignKey: 'id_user' });
+Employee.belongsTo(User, { foreignKey: 'id_user' });
 
 
-//User
-User.hasOne(Employee)
-Employee.belongsTo(User)
-
-
-//Role
-Role.hasMany(User)
-User.belongsTo(Role)
-
+// Role
+Role.hasMany(User, { foreignKey: 'id_role' });
+User.belongsTo(Role, { foreignKey: 'id_role' });
 
 
 module.exports = {
   sequelize,
-  Profile,
-  Contract,
-  Job,
   Service,
   Service_status,
   Comodato,

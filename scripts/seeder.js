@@ -71,24 +71,52 @@ async function seed() {
             ),
 
 
-            Service.bulkCreate({
-                id_service: 1,
-                line_number: 123456789,
-                service_number: 1001,
-                ServiceStatusId: 1, // Relación con Service_status
-                id_client: 1, // Relación con Client
-                id_service_type: 1, // Relación con Service_type
-                id_location: 1, // Relación con Location
-            }, {
-                id_service: 2,
-                line_number: 123321,
-                service_number: 1004,
-                ServiceStatusId: 2, // Relación con Service_status
-                id_client: 2, // Relación con Client
-                id_service_type: 1, // Relación con Service_type
-                id_location: 1, // Relación con Location
-            }, {
-            }),
+            // Crear registros para Service_type
+            Service_type.bulkCreate([
+                { id_service_type: 1, description: 'FTTH' },
+                { id_service_type: 2, description: 'FTTH + Telefono' },
+                { id_service_type: 3, description: 'ADSL' },
+                { id_service_type: 4, description: 'ADSL + Telefono' },
+                { id_service_type: 5, description: 'Telefono' }
+            ]),
+
+            Service_status.bulkCreate([
+                { id_service_status: 1, description: 'Activo' },
+                { id_service_status: 2, description: 'Esperando instalacion' },
+                { id_service_status: 3, description: 'Dado de baja, esperando equipo' },
+                { id_service_status: 4, description: 'Baja finalizada con entrega de equipo' }
+            ]),
+
+
+
+            // Crear registros para Client
+            Client.bulkCreate([
+                { id_client: 1, name: 'Juan', last_name: 'Perez', dni: 12345678, contact_number: 154567890 },
+                { id_client: 2, name: 'Mauricio', last_name: 'Chaile', dni: 39998492, contact_number: 3815524562 }
+                // Agrega más registros según sea necesario
+            ]),
+
+
+            Service.bulkCreate([
+                {
+                    id_service: 1,
+                    line_number: 123456789,
+                    service_number: 1001,
+                    id_service_status: 1, // Relación con Service_status
+                    id_client: 1, // Relación con Client
+                    id_service_type: 1, // Relación con Service_type
+                    id_location: 1, // Relación con Location
+                }, {
+                    id_service: 2,
+                    line_number: 123321,
+                    service_number: 1004,
+                    id_service_status: 2, // Relación con Service_status
+                    id_client: 2, // Relación con Client
+                    id_service_type: 1, // Relación con Service_type
+                    id_location: 1, // Relación con Location
+                },
+            ]
+            ),
 
 
             Comodato.create({
@@ -99,28 +127,7 @@ async function seed() {
                 id_service: 1, // Relación con Service
             }),
 
-            Service_status.bulkCreate([
-                { id_service_status: 1, description: 'Activo' },
-                { id_service_status: 2, description: 'Esperando instalacion' },
-                { id_service_status: 3, description: 'Dado de baja, esperando equipo' },
-                { id_service_status: 4, description: 'Baja finalizada con entrega de equipo' }
-            ]),
 
-            // Crear registros para Service_type
-            Service_type.bulkCreate([
-                { id_service_type: 1, description: 'FTTH' },
-                { id_service_type: 2, description: 'FTTH + Telefono' },
-                { id_service_type: 3, description: 'ADSL' },
-                { id_service_type: 4, description: 'ADSL + Telefono' },
-                { id_service_type: 5, description: 'Telefono' }
-            ]),
-
-            // Crear registros para Client
-            Client.bulkCreate([
-                { id_client: 1, name: 'Juan', last_name: 'Perez', dni: 12345678, contact_number: 154567890 },
-                { id_client: 2, name: 'Mauricio', last_name: 'Chaile', dni: 39998492, contact_number: 3815524562 }
-                // Agrega más registros según sea necesario
-            ]),
 
             // Crear registros para Service
 
@@ -132,11 +139,6 @@ async function seed() {
                 // Agrega más registros según sea necesario
             ]),
 
-            // Crear registros para Visit
-            Visit.bulkCreate([
-                { id_visit: 1, description: 'Visita 1', picture: '...', id_claim: 1 }
-                // Agrega más registros según sea necesario
-            ]),
 
             // Crear registros para Claim
             Claim.bulkCreate([
@@ -145,6 +147,14 @@ async function seed() {
                 { id_claim: 3, observations: 'Reclamo 3', status: 'Finalizado', id_service: 2, id_close_without_visit: 1 }
                 // Agrega más registros según sea necesario
             ]),
+
+
+            // Crear registros para Visit
+            Visit.bulkCreate([
+                { id_visit: 1, description: 'Visita 1', picture: '...', id_claim: 1 }
+                // Agrega más registros según sea necesario
+            ]),
+
 
             // Crear registros para Claim_attention
             Claim_attention.bulkCreate([
@@ -166,10 +176,14 @@ async function seed() {
                 { id_employee: 2, name: 'María', last_name: 'González', dni: 87654321, }
             ]),
 
+            Role.bulkCreate([
+                { name: 'Administrador' }, { name: 'Supervisor' }, { name: 'Técnico' }]),
+
+
             User.bulkCreate([{
                 username: 'usuario1',
                 password: 'contraseña1',
-                id_mobile: 1, // ID de un registro válido en la tabla Mobile
+                id_mobile: null, // ID de un registro válido en la tabla Mobile
                 id_role: 1 // ID de un registro válido en la tabla Role
             },
             {
@@ -180,8 +194,6 @@ async function seed() {
             },
             ]),
 
-            Role.bulkCreate([
-                { name: 'Administrador' }, { name: 'Supervisor' }, { name: 'Técnico' }]),
 
             Vehicle.bulkCreate([
                 {
@@ -294,32 +306,32 @@ async function seed() {
 
             Service_data.bulkCreate([
                 {
-                  id_service_data: 1,
-                  liston: 'Liston A',
-                  borne: 123,
-                  placa: 'Placa B',
-                  posicion: 456,
-                  caja: 'Caja C',
-                  posicion_ftth: 789,
-                  id_service: 1 // Asigna aquí el id del servicio relacionado
+                    id_service_data: 1,
+                    liston: 'Liston A',
+                    borne: 123,
+                    placa: 'Placa B',
+                    posicion: 456,
+                    caja: 'Caja C',
+                    posicion_ftth: 789,
+                    id_service: 1 // Asigna aquí el id del servicio relacionado
                 },
                 {
-                  id_service_data: 2,
-                  liston: 'Liston X',
-                  borne: 987,
-                  placa: 'Placa Y',
-                  posicion: 654,
-                  caja: 'Caja Z',
-                  posicion_ftth: 321,
-                  id_service: 2 // Asigna aquí el id de otro servicio relacionado
+                    id_service_data: 2,
+                    liston: 'Liston X',
+                    borne: 987,
+                    placa: 'Placa Y',
+                    posicion: 654,
+                    caja: 'Caja Z',
+                    posicion_ftth: 321,
+                    id_service: 2 // Asigna aquí el id de otro servicio relacionado
                 },
                 // Agrega más registros según sea necesario
-              ]),
+            ]),
         ])
 
 
     } catch (error) {
-        console.error('Error',error)
+        console.error('Error', error)
 
     } finally {
         await sequelize.close()

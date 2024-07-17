@@ -165,8 +165,9 @@ async function seed() {
 
             // Crear registros para Installation
             Installation.bulkCreate([
-                { id_installation: 1, news: 'Instalación 1', picture1: '...', picture2: '...', picture3: '...', id_service: 1 },
-                { id_installation: 2, news: 'Instalación 1', picture1: '...', picture2: '...', picture3: '...', id_service: 2 }
+                { id_installation: 1, news: 'Instalación 1', picture1: '...', picture2: '...', picture3: '...', id_service: 1,status:'Nuevo' },
+                { id_installation: 2, news: 'Instalación 2', picture1: '...', picture2: '...', picture3: '...', id_service: 2, status:'Nuevo' },
+                { id_installation: 3, news: 'Instalación 3', picture1: '...', picture2: '...', picture3: '...', id_service: 2,status:'Realizado' }
                 // Agrega más registros según sea necesario
             ]),
 

@@ -418,6 +418,10 @@ Installation.init(
       type: Sequelize.BLOB,
       allowNull: false
     },
+    status:{
+      type: Sequelize.ENUM('Nuevo','En proceso','Realizado'),
+      allowNull:false
+    }
   },
   {
     sequelize,

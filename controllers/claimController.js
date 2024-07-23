@@ -1,4 +1,4 @@
-const { Claim,Mobile } = require('../src/model');
+const { Claim, Client, Service, Location, Service_type } = require('../src/model');
 
 // Obtener todos los reclamos
 exports.getAllClaims = async (req, res) => {
@@ -25,6 +25,41 @@ exports.getClaimById = async (req, res) => {
         res.status(500).json({ message: 'Error al obtener el reclamo.' });
     }
 };
+
+
+exports.getClaimDetails = async (req, res) => {
+    const claimId = req.params.id_claim;
+    try {
+        const claim = await Claim.findOne({
+            where: { id_claim: claimId },
+            include: [
+                {
+                    model: Service,
+                    include: [
+                        {
+                            model: Client,
+                        },
+                        {
+                            model: Location,
+                        },
+                        {
+                            model: Service_type,
+                        }
+                    ]
+                }
+            ]
+        });
+
+        if (!claim) {
+            return res.status(404).json({ error: 'Claim no encontrado' });
+        }
+
+        res.json(claim);
+    } catch (error) {
+        console.error('Error al obtener la información del claim:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+}
 
 
 

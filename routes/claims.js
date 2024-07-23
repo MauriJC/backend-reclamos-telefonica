@@ -5,8 +5,10 @@ const claimController = require('../controllers/claimController');
 // Rutas para los reclamos
 router.get('/', claimController.getAllClaims);
 router.get('/:id', claimController.getClaimById);
+router.get('/details/:id_claim', claimController.getClaimDetails);
 router.post('/', claimController.createClaim);
 router.put('/:id', claimController.updateClaim);
 router.delete('/:id', claimController.deleteClaim);
+
 
 module.exports = router;

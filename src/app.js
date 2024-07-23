@@ -17,6 +17,8 @@ const claimRoutes = require('../routes/claims');
 const clientRoutes  = require('../routes/clients');
 const installationRoutes = require('../routes/installations');
 const mobileRoutes = require('../routes/mobiles');
+const materialRoutes = require('../routes/materials');
+const usedMaterialsAttentionsRoutes = require('../routes/usedMaterialsAttentions')
 
 // Modelo==>Sync DB ==> Seed ==> rutas ==>LOG AL FINAL del backend ==>Front ==> 
 
@@ -27,6 +29,9 @@ app.use('/claims',claimRoutes);
 app.use('/clients', clientRoutes);
 app.use('/installations',installationRoutes);
 app.use('/mobiles',mobileRoutes);
+app.use('/materials',materialRoutes);
+app.use('/usedMaterialsAttentions',usedMaterialsAttentionsRoutes);
+
 
 // Middleware de manejo de errores
 app.use((err, req, res, next) => {

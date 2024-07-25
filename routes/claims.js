@@ -9,6 +9,7 @@ router.get('/details/:id_claim', claimController.getClaimDetails);
 router.post('/', claimController.createClaim);
 router.put('/:id', claimController.updateClaim);
 router.delete('/:id', claimController.deleteClaim);
+router.post('/close',claimController.closeClaim);
 
 
 module.exports = router;

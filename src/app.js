@@ -5,7 +5,8 @@ const cors = require('cors'); // Importar cors
 //const { getProfile } = require('./middleware/getProfile')
 
 const app = express();
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit:'50mb'}));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(cors());
 app.set('sequelize', sequelize);
 app.set('models', sequelize.models);

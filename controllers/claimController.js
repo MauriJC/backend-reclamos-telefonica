@@ -1,4 +1,4 @@
-const { Claim, Client, Service, Location, Service_type } = require('../src/model');
+const { Claim, Client, Service, Location, Service_type, Claim_attention, Used_materials_attention } = require('../src/model');
 
 // Obtener todos los reclamos
 exports.getAllClaims = async (req, res) => {
@@ -116,5 +116,62 @@ exports.deleteClaim = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error al eliminar el reclamo.' });
+    }
+};
+
+exports.closeClaim = async (req, res) => {
+    const {
+        observations,
+        id_claim,
+        id_service,
+        id_mobile,
+        photos,
+        usedMaterialsData,
+        latitude,
+        longitude
+    } = req.body;
+
+    try {
+
+
+        // Actualizar el estado del Claim a 'Finalizado'
+        await Claim.update(
+            { status: 'Finalizado' },
+            { where: { id_claim } }
+        );
+        // Verificar si el servicio tiene una Location asociada
+        const service = await Service.findByPk(id_service, {
+            include: [Location]
+        });
+
+        if (service.Location) {
+            // Actualizar la Location existente
+            await service.Location.update({
+                latitude,
+                longitude
+            });
+        }
+
+        // Procesar el resto de la lógica para cerrar el claim
+        const claimAttention = await Claim_attention.create({
+            observations,
+            id_claim,
+            picture1: photos[0].base64,
+            picture2: photos[1].base64,
+            picture3: photos[2].base64,
+        });
+
+        for (const material of usedMaterialsData) {
+            await Used_materials_attention.create({
+                id_claim_attention: claimAttention.id_claim_attention,
+                id_material: material.id_material,
+                used_quantity: material.quantity
+            });
+        }
+
+        res.status(200).json({ message: 'Claim closed successfully' });
+    } catch (error) {
+        console.error('Error closing claim:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 };

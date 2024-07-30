@@ -1,4 +1,4 @@
-const { Installation, Location, Service, Client, Used_materials_installation, Material } = require('../src/model');
+const { Installation, Location, Service, Client, Used_materials_installation, Material, Service_type } = require('../src/model');
 const sequelize = require('sequelize');
 
 // Obtener todas las instalaciones
@@ -11,6 +11,20 @@ async function getAllInstallations(req, res) {
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 }
+
+// Obtener todas las instalaciones Nuevas
+async function getAllNewInstallations(req, res) {
+    try {
+        const installations = await Installation.findAll(
+            { where: { status: 'Nuevo' } });
+        console.log('instalaciones', installations)
+        res.json(installations);
+    } catch (error) {
+        console.error('Error al obtener todas las instalaciones:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+}
+
 
 // Obtener una instalación por ID
 async function getInstallationById(req, res) {
@@ -28,7 +42,7 @@ async function getInstallationById(req, res) {
                         model: Client,
                         attributes: ['id_client', 'name', 'last_name', 'dni', 'contact_number']
                     },
-                    include:{
+                    include: {
                         model: Location,
                         attributes: ['id_location', 'textual_direction', 'latitude', 'longitude'],
                     },
@@ -54,6 +68,43 @@ async function getInstallationById(req, res) {
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 }
+
+
+async function getInstallationDetails(req, res) {
+    const id_installation = req.params.id_installation;
+    try {
+        const installation = await Installation.findOne({
+            where: { id_installation: id_installation },
+            include: [
+                {
+                    model: Service,
+                    include: [
+                        {
+                            model: Client,
+                        },
+                        {
+                            model: Location,
+                        },
+                        {
+                            model: Service_type,
+                        }
+                    ]
+                }
+            ]
+        });
+
+        if (!installation) {
+            return res.status(404).json({ error: 'Installation no encontrada' });
+        }
+
+        res.json(installation);
+    } catch (error) {
+        console.error('Error al obtener la información de la installation:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+}
+
+
 
 // Crear una nueva instalación
 async function createInstallation(req, res) {
@@ -118,7 +169,7 @@ async function getInstallationsByMobile(req, res) {
 async function getInstallationsAssignedAndOthers(req, res) {
     const { id } = req.params;
     try {
-        console.log('HOLA')
+        //console.log('HOLA')
         const assignedInstallations = await Installation.findAll({
             where: { id_mobile: id }
         });
@@ -139,6 +190,65 @@ async function getInstallationsAssignedAndOthers(req, res) {
     }
 }
 
+async function closeInstallation(req, res) {
+    const {
+        news,
+        id_installation,
+        id_service,
+        id_mobile,
+        photos,
+        usedMaterialsData,
+        latitude,
+        longitude
+    } = req.body;
+
+    try {
+        // Actualizar el estado del Claim a 'Finalizado'
+       const install =  await Installation.update(
+            {
+                status: 'Realizado',
+                picture1: photos[0].base64,
+                picture2: photos[1].base64,
+                picture3: photos[2].base64,
+                news:news
+                
+            },
+            { where: { id_installation } }
+        );
+        // Verificar si el servicio tiene una Location asociada
+        const service = await Service.findByPk(id_service, {
+            include: [Location]
+        });
+
+        if (service.Location) {
+            // Actualizar la Location existente
+            await service.Location.update({
+                latitude,
+                longitude
+            });
+        }
+
+        for (const material of usedMaterialsData) {
+            await Used_materials_installation.create({
+                id_installation: install.id_installation,
+                id_material: material.id_material,
+                used_quantity: material.quantity,
+                price: material.price
+            });
+        }
+
+        res.status(200).json({ message: 'Claim closed successfully' });
+    } catch (error) {
+        console.error('Error closing claim:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+
+
+
+
+
 
 module.exports = {
     getAllInstallations,
@@ -147,5 +257,8 @@ module.exports = {
     updateInstallation,
     deleteInstallation,
     getInstallationsByMobile,
-    getInstallationsAssignedAndOthers
+    getInstallationsAssignedAndOthers,
+    getInstallationDetails,
+    getAllNewInstallations,
+    closeInstallation
 };

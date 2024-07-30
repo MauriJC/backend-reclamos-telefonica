@@ -7,15 +7,22 @@ const {
     updateInstallation,
     deleteInstallation,
     getInstallationsByMobile,
-    getInstallationsAssignedAndOthers
+    getInstallationsAssignedAndOthers,
+    getInstallationDetails,
+    getAllNewInstallations,
+    closeInstallation
 } = require('../controllers/installationController');
 
+router.get('/new',getAllNewInstallations);
+router.post('/close',closeInstallation)
 router.get('/', getAllInstallations);
-router.get('/:id', getInstallationById);
+router.get('/int:id', getInstallationById);
 router.post('/', createInstallation);
 router.put('/:id', updateInstallation);
 router.delete('/:id', deleteInstallation);
 router.get('/mobile/:id', getInstallationsByMobile);
 router.get('/mobile/:id/assigned-others', getInstallationsAssignedAndOthers);
+router.get('/details/:id_installation',getInstallationDetails);
+
 
 module.exports = router;

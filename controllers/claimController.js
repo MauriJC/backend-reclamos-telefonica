@@ -66,13 +66,13 @@ exports.getClaimDetails = async (req, res) => {
 
 // Crear un nuevo reclamo
 exports.createClaim = async (req, res) => {
-    const { observations, status, id_service, id_close_without_visit } = req.body;
+    const { observations, id_service,visit_shedules_availability } = req.body;
     try {
         const newClaim = await Claim.create({
             observations,
-            status,
+            status:'Nuevo',
             id_service,
-            id_close_without_visit
+            visit_shedules_availability
         });
         res.status(201).json(newClaim);
     } catch (error) {

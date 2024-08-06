@@ -1,8 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { sequelize } = require('./model')
-const cors = require('cors'); // Importar cors
-//const { getProfile } = require('./middleware/getProfile')
+const { sequelize } = require('./model');
+const cors = require('cors');
 
 const app = express();
 app.use(bodyParser.json({limit:'50mb'}));
@@ -11,6 +10,9 @@ app.use(cors());
 app.set('sequelize', sequelize);
 app.set('models', sequelize.models);
 
+//Middlewares
+const tokenAuth = require('./middleware/authenticateToken');
+const authorizeRoles = require('./middleware/authorizeRoles');
 
 const serviceRoutes = require('../routes/services');
 const serviceStatusRoutes = require('../routes/serviceStatuses');
@@ -19,7 +21,8 @@ const clientRoutes  = require('../routes/clients');
 const installationRoutes = require('../routes/installations');
 const mobileRoutes = require('../routes/mobiles');
 const materialRoutes = require('../routes/materials');
-const usedMaterialsAttentionsRoutes = require('../routes/usedMaterialsAttentions')
+const usedMaterialsAttentionsRoutes = require('../routes/usedMaterialsAttentions');
+const authRoutes = require('../routes/auth');
 
 // Modelo==>Sync DB ==> Seed ==> rutas ==>LOG AL FINAL del backend ==>Front ==> 
 
@@ -32,6 +35,9 @@ app.use('/installations',installationRoutes);
 app.use('/mobiles',mobileRoutes);
 app.use('/materials',materialRoutes);
 app.use('/usedMaterialsAttentions',usedMaterialsAttentionsRoutes);
+app.use('/auth',authRoutes);
+
+
 
 
 // Middleware de manejo de errores

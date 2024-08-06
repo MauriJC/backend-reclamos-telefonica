@@ -1,4 +1,4 @@
-const { Service, Client } = require('../src/model');
+const { Service, Client, Location } = require('../src/model');
 
 
 exports.getAllServices = async (req, res) => {
@@ -34,7 +34,17 @@ exports.getServiceById = async (req, res) => {
 
 exports.getServiceByLineNumber = async (req, res) => {
     try {
-        const service = await Service.findOne({ where: { line_number: req.params.lineNumber } });
+        const service = await Service.findOne({
+            where: { line_number: req.params.lineNumber },
+            include: [
+                {
+                    model: Client,
+                },
+                {
+                    model: Location,
+                }
+            ]
+        });
         if (service) {
             res.json(service);
         } else {
@@ -59,7 +69,7 @@ exports.getServicesByClientId = async (req, res) => {
 };
 
 
-exports.getServicesByClientDni = async(req, res) =>  {
+exports.getServicesByClientDni = async (req, res) => {
     const { dni } = req.params;
     try {
         const client = await Client.findOne({

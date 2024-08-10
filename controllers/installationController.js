@@ -16,7 +16,11 @@ async function getAllInstallations(req, res) {
 async function getAllNewInstallations(req, res) {
     try {
         const installations = await Installation.findAll(
-            { where: { status: 'Nuevo' } });
+            { where: { status: 'Nuevo' },
+            include:{
+                model:Service
+            },
+        });
         console.log('instalaciones', installations)
         res.json(installations);
     } catch (error) {

@@ -73,20 +73,18 @@ exports.getServicesByClientDni = async (req, res) => {
     const { dni } = req.params;
     try {
         const client = await Client.findOne({
-            where: { dni: dni },
-            include: {
+            where: { dni },
+            include: [{
                 model: Service,
-                required: true // Para asegurarnos de que solo incluya clientes que tienen servicios
-            }
+                include:[{model:Location}]
+            }]
         });
 
         if (!client) {
             return res.status(404).json({ error: 'Cliente no encontrado' });
         }
 
-        const services = client.Services; // Los servicios asociados al cliente
-
-        res.json(services);
+        res.json(client);
     } catch (error) {
         console.error('Error al obtener servicios por DNI del cliente:', error);
         res.status(500).json({ error: 'Error interno del servidor' });

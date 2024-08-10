@@ -1,12 +1,11 @@
-const authorizeRoles = (requiredRoles) => {
-    return (req, res, next) => {
-      const { role } = req.user;
-      if (!requiredRoles.includes(role)) {
-        return res.status(403).send('Access denied');
-      }
-      next();
-    };
+const authorizeRole = (roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.Role.name)) {
+      return res.sendStatus(403);
+    }
+    next();
   };
-  
-  module.exports = authorizeRoles;
+};
+
+module.exports = authorizeRole;
   

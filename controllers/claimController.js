@@ -3,7 +3,12 @@ const { Claim, Client, Service, Location, Service_type, Claim_attention, Used_ma
 // Obtener todos los reclamos
 exports.getAllClaims = async (req, res) => {
     try {
-        const claims = await Claim.findAll();
+        const claims = await Claim.findAll({
+            include:{
+                model:Service
+            }
+        }
+        );
         res.json(claims);
     } catch (error) {
         //console.error(error);

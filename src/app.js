@@ -24,6 +24,7 @@ const materialRoutes = require('../routes/materials');
 const usedMaterialsAttentionsRoutes = require('../routes/usedMaterialsAttentions');
 const authRoutes = require('../routes/auth');
 const userRoutes = require('../routes/user');
+const serviceTypesRoutes = require('../routes/serviceTypes');
 
 // Modelo==>Sync DB ==> Seed ==> rutas ==>LOG AL FINAL del backend ==>Front ==> 
 
@@ -38,6 +39,7 @@ app.use('/materials',materialRoutes);
 app.use('/usedMaterialsAttentions',usedMaterialsAttentionsRoutes);
 app.use('/auth',authRoutes);
 app.use('/users',userRoutes);
+app.use('/servicetypes',serviceTypesRoutes);
 
 
 

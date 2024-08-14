@@ -11,8 +11,31 @@ exports.getAllServices = async (req, res) => {
 };
 
 exports.createService = async (req, res) => {
+    const { id_client, textual_direction, date, service_type, line_number, service_number } = req.body;
     try {
-        const service = await Service.create(req.body);
+        const client = await Client.findByPk(id_client);
+        console.log(id_client)
+        if (!client) {
+            return res.status(404).json({ error: "Client not found" });
+        }
+
+        const location = await Location.create({
+            textual_direction,
+        });
+
+        const service = await Service.create({
+            id_client,
+            line_number,
+            id_location: location.id_location,
+            createdAt: date,
+            id_service_type: service_type,
+            service_number
+        });
+
+        await location.update({
+            id_service: service.id_service
+        })
+
         res.status(201).json(service);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -76,7 +99,7 @@ exports.getServicesByClientDni = async (req, res) => {
             where: { dni },
             include: [{
                 model: Service,
-                include:[{model:Location}]
+                include: [{ model: Location }]
             }]
         });
 

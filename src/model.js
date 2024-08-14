@@ -12,7 +12,8 @@ Service.init(
   {
     id_service: {
       type: Sequelize.INTEGER,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement:true
     },
     line_number: {
       type: Sequelize.BIGINT,
@@ -92,7 +93,7 @@ Client.init(
     dni: {
       type: Sequelize.BIGINT,
       allowNull: false,
-      unique:true
+      unique: true
     },
     contact_number: {
       type: Sequelize.BIGINT,
@@ -132,7 +133,8 @@ Location.init(
   {
     id_location: {
       type: Sequelize.INTEGER,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement:true
     },
     textual_direction: {
       type: Sequelize.TEXT(150),
@@ -418,9 +420,9 @@ Installation.init(
       type: Sequelize.BLOB,
       allowNull: false
     },
-    status:{
-      type: Sequelize.ENUM('Nuevo','En proceso','Realizado'),
-      allowNull:false
+    status: {
+      type: Sequelize.ENUM('Nuevo', 'En proceso', 'Realizado'),
+      allowNull: false
     }
   },
   {
@@ -469,7 +471,7 @@ Material.init(
       type: Sequelize.TEXT,
       allowNull: false
     },
-    description:{
+    description: {
       type: Sequelize.TEXT(250),
       allowNull: true
     },
@@ -477,9 +479,9 @@ Material.init(
       type: Sequelize.INTEGER,
       allowNull: false
     },
-    price:{
+    price: {
       type: Sequelize.FLOAT,
-      allowNull:true
+      allowNull: true
     },
   },
   {
@@ -569,7 +571,7 @@ Service_data.init(
       type: Sequelize.INTEGER,
       allowNull: false
     },
-    
+
   },
   {
     sequelize,
@@ -651,8 +653,8 @@ User.belongsTo(Mobile, { foreignKey: 'id_mobile' });
 Mobile.hasMany(Claim, { foreignKey: 'id_mobile' });
 Claim.belongsTo(Mobile, { foreignKey: 'id_mobile' });
 
-Mobile.hasMany(Installation,{foreignKey:'id_mobile'});
-Installation.belongsTo(Mobile,{foreignKey:'id_mobile'});
+Mobile.hasMany(Installation, { foreignKey: 'id_mobile' });
+Installation.belongsTo(Mobile, { foreignKey: 'id_mobile' });
 // User
 User.hasOne(Employee, { foreignKey: 'id_user' });
 Employee.belongsTo(User, { foreignKey: 'id_user' });

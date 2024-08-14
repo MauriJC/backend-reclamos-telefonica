@@ -16,12 +16,12 @@ async function getAllInstallations(req, res) {
 async function getAllNewInstallations(req, res) {
     try {
         const installations = await Installation.findAll(
-            { where: { status: 'Nuevo' },
-            include:{
-                model:Service
-            },
-        });
-        console.log('instalaciones', installations)
+            {
+                where: { status: 'Nuevo' },
+                include: {
+                    model: Service
+                },
+            });
         res.json(installations);
     } catch (error) {
         console.error('Error al obtener todas las instalaciones:', error);
@@ -208,14 +208,14 @@ async function closeInstallation(req, res) {
 
     try {
         // Actualizar el estado del Claim a 'Finalizado'
-       const install =  await Installation.update(
+        const install = await Installation.update(
             {
                 status: 'Realizado',
                 picture1: photos[0].base64,
                 picture2: photos[1].base64,
                 picture3: photos[2].base64,
-                news:news
-                
+                news: news
+
             },
             { where: { id_installation } }
         );

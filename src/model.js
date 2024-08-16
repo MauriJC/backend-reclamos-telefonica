@@ -80,7 +80,8 @@ Client.init(
   {
     id_client: {
       type: Sequelize.INTEGER,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement:true
     },
     name: {
       type: Sequelize.TEXT(50),

@@ -1,14 +1,16 @@
-const { Claim, Client, Service, Location, Service_type, Claim_attention, Used_materials_attention } = require('../src/model');
+const { Claim, Client, Service, Location, Service_type, Claim_attention, Used_materials_attention, Close_without_visit } = require('../src/model');
 
 // Obtener todos los reclamos
 exports.getAllClaims = async (req, res) => {
     try {
         const claims = await Claim.findAll({
-            include:{
-                model:Service
+            include: {
+                model: Service,
+                include: {
+                    model: Location
+                }
             }
-        }
-        );
+        });
         res.json(claims);
     } catch (error) {
         //console.error(error);
@@ -71,11 +73,11 @@ exports.getClaimDetails = async (req, res) => {
 
 // Crear un nuevo reclamo
 exports.createClaim = async (req, res) => {
-    const { observations, id_service,visit_shedules_availability } = req.body;
+    const { observations, id_service, visit_shedules_availability } = req.body;
     try {
         const newClaim = await Claim.create({
             observations,
-            status:'Nuevo',
+            status: 'Nuevo',
             id_service,
             visit_shedules_availability
         });
@@ -180,3 +182,24 @@ exports.closeClaim = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+exports.closeClaimWithoutVisit = async (req, res) => {
+    const { id_claim, description } = req.body;
+    try {
+        const claim = await Claim.findByPk(id_claim);
+        claim.update({
+            status:'Finalizado'
+        });
+        const close = await Close_without_visit.create({
+            id_claim,
+            description
+        });
+
+        res.status(200).json({message:'Reclamo cerrado sin visita exitosamente'});
+    }
+    catch (error) {
+        console.error('Error closing claim:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+
+}

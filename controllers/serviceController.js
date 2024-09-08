@@ -1,4 +1,4 @@
-const { Service, Client, Location } = require('../src/model');
+const { Service, Client, Location, Service_type, Service_status, Installation } = require('../src/model');
 
 
 exports.getAllServices = async (req, res) => {
@@ -23,21 +23,30 @@ exports.createService = async (req, res) => {
             textual_direction,
         });
 
+        const service_status = await Service_status.findOne({ where: { description: 'Esperando instalacion' } });
+
         const service = await Service.create({
             id_client,
             line_number,
             id_location: location.id_location,
             createdAt: date,
             id_service_type: service_type,
-            service_number
+            service_number,
+            id_service_status: service_status.id_service_status,
         });
 
         await location.update({
             id_service: service.id_service
-        })
+        });
+
+        await Installation.create({
+            id_service: service.id_service,
+            status: 'Nuevo',
+        });
 
         res.status(201).json(service);
     } catch (error) {
+        console.log(error)
         res.status(500).json({ error: error.message });
     }
 };

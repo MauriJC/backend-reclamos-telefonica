@@ -295,7 +295,8 @@ Mobile.init(
       type: Sequelize.INTEGER,
       allowNull: false,
       primaryKey: true,
-      autoIncrement: true
+      autoIncrement: true,
+      onDelete: 'SET NULL'
     },
   },
   {
@@ -407,19 +408,19 @@ Installation.init(
     },
     news: {
       type: Sequelize.TEXT(250),
-      allowNull: false
+      allowNull: true
     },
     picture1: {
       type: Sequelize.BLOB,
-      allowNull: false
+      allowNull: true
     },
     picture2: {
       type: Sequelize.BLOB,
-      allowNull: false
+      allowNull: true
     },
     picture3: {
       type: Sequelize.BLOB,
-      allowNull: false
+      allowNull: true
     },
     status: {
       type: Sequelize.ENUM('Nuevo', 'En proceso', 'Realizado'),

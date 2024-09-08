@@ -4,7 +4,7 @@ const sequelize = require('sequelize');
 // Obtener todas las instalaciones
 async function getAllInstallations(req, res) {
     try {
-        const installations = await Installation.findAll();
+        const installations = await Installation.findAll({include:{model:Service}});
         res.json(installations);
     } catch (error) {
         console.error('Error al obtener todas las instalaciones:', error);

@@ -188,18 +188,33 @@ exports.closeClaimWithoutVisit = async (req, res) => {
     try {
         const claim = await Claim.findByPk(id_claim);
         claim.update({
-            status:'Finalizado'
+            status: 'Finalizado'
         });
         const close = await Close_without_visit.create({
             id_claim,
             description
         });
 
-        res.status(200).json({message:'Reclamo cerrado sin visita exitosamente'});
+        res.status(200).json({ message: 'Reclamo cerrado sin visita exitosamente' });
     }
     catch (error) {
         console.error('Error closing claim:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 
-}
+};
+
+
+exports.getUnassignedClaims = async (req, res) => {
+    try {
+        const unassignedClaims = await Claim.findAll(
+            {
+                where: { id_mobile: null, status: 'Nuevo' }
+            });
+        return res.status(200).json(unassignedClaims);
+
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+
+};

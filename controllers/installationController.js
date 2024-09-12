@@ -4,7 +4,7 @@ const sequelize = require('sequelize');
 // Obtener todas las instalaciones
 async function getAllInstallations(req, res) {
     try {
-        const installations = await Installation.findAll({include:{model:Service}});
+        const installations = await Installation.findAll({ include: { model: Service } });
         res.json(installations);
     } catch (error) {
         console.error('Error al obtener todas las instalaciones:', error);
@@ -249,7 +249,19 @@ async function closeInstallation(req, res) {
 };
 
 
-
+async function getAllUnassignedInstallations(req, res) {
+    try {
+        const unassignedInstallations = await Installation.findAll({
+            where: { id_mobile: null, status:'Nuevo' },
+            attributes: {
+                exclude: ['picture1', 'picture2', 'picture3']
+            }
+        });
+        return res.status(200).json(unassignedInstallations);
+    } catch (error) {
+        return res.status(500).json({ message: "Error fetching installations", error });
+    }
+};
 
 
 
@@ -264,5 +276,6 @@ module.exports = {
     getInstallationsAssignedAndOthers,
     getInstallationDetails,
     getAllNewInstallations,
-    closeInstallation
+    closeInstallation,
+    getAllUnassignedInstallations
 };

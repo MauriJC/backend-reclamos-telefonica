@@ -1,4 +1,26 @@
-const { Claim, Mobile, User, Employee, Vehicle, sequelize } = require('../src/model');
+const { Claim, Mobile, User, Employee, Vehicle, sequelize, Installation } = require('../src/model');
+const { Op } = require('sequelize');
+
+async function getAllMobiles(req, res) {
+    try {
+        const mobiles = await Mobile.findAll({
+            include: [{
+                model: User,
+                attributes: {
+                    exclude: [
+                        'password', 'username'
+                    ]
+                },
+                include: [
+                    { model: Employee },
+                ],
+            }, { model: Vehicle }]
+        });
+        return res.status(200).json(mobiles);
+    } catch (error) {
+        return res.status(500).json({ message: "An error ocurred while fetching mobiles", error });
+    }
+};
 
 async function getClaimsByMobile(req, res) {
     const { id_mobile } = req.params;
@@ -42,8 +64,8 @@ async function assignMobile(req, res) {
         const employees = await Employee.findAll({
             where: { id_employee: id_employees },  // id_employees es un array
             include: {
-                model: User,  // Asumiendo que tienes una relación Employee -> User
-                as: 'User'    // Asegúrate de que el alias coincide con la relación definida
+                model: User,
+                as: 'User'
             },
             transaction: t
         });
@@ -72,7 +94,38 @@ async function assignMobile(req, res) {
 };
 
 
+async function assignClaimsInstallations(req, res) {
+    try {
+        const { installations: id_installations, mobile: id_mobile, claims: id_claims } = req.body;
+        /*
+            Que debemos hacer?
+            Relacionar el mobile con los claims e installations
+            claim e installations tienen columna id_mobile
+            => Debemos asignar el valor del id_mobile que existe en mobile a los claims e installations
+            recordar que claims e inst son arrays
+        */
+        await Claim.update(
+            { id_mobile: id_mobile },
+            { where: { id_claim: { [Op.in]: id_claims } } }
+        );
+
+        await Installation.update(
+            { id_mobile: id_mobile },
+            { where: { id_installation: { [Op.in]: id_installations } } }
+        );
+
+        return res.status(200).json({ message: "Asignacion realizada exitosamente!" });
+
+    } catch (error) {
+        return res.status(500).json({ message: "Internal server error", error })
+    }
+
+};
+
+
 module.exports = {
     getClaimsByMobile,
-    assignMobile
+    assignMobile,
+    getAllMobiles,
+    assignClaimsInstallations
 };

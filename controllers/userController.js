@@ -13,7 +13,7 @@ exports.registerUser = async (req, res) => {
         if (!roleData) {
             return res.status(400).send('Rol no válido');
         }
-        
+
         // Encriptar la contraseña
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -49,7 +49,7 @@ exports.login = async (req, res) => {
         const validPassword = await bcrypt.compare(password, user.password);
         if (!validPassword) return res.status(400).send('Usuario o contraseña incorrectos');
 
-        console.log(JWT_SECRET)
+        //console.log(JWT_SECRET);
 
         const token = jwt.sign({
             id_user: user.id_user,
@@ -58,7 +58,7 @@ exports.login = async (req, res) => {
             role: user.Role.name
         },
             JWT_SECRET, { expiresIn: '1h' });
-        console.log('el token enviado es', token);
+        //console.log('el token enviado es', token);
         return res.status(200).json({ token });
     } catch (error) {
         return res.json(error);

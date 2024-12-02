@@ -186,7 +186,8 @@ Employee.init(
   {
     id_employee: {
       type: Sequelize.INTEGER,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement:true
     },
     name: {
       type: Sequelize.TEXT(50),

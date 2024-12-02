@@ -5,7 +5,7 @@ const cors = require('cors');
 const mobileCron = require('../cron/mobileCron');
 
 const app = express();
-app.use(bodyParser.json({limit:'50mb'}));
+app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(cors());
 app.set('sequelize', sequelize);
@@ -18,12 +18,11 @@ const authorizeRoles = require('./middleware/authorizeRoles');
 const serviceRoutes = require('../routes/services');
 const serviceStatusRoutes = require('../routes/serviceStatuses');
 const claimRoutes = require('../routes/claims');
-const clientRoutes  = require('../routes/clients');
+const clientRoutes = require('../routes/clients');
 const installationRoutes = require('../routes/installations');
 const mobileRoutes = require('../routes/mobiles');
 const materialRoutes = require('../routes/materials');
 const usedMaterialsAttentionsRoutes = require('../routes/usedMaterialsAttentions');
-const authRoutes = require('../routes/auth');
 const userRoutes = require('../routes/user');
 const serviceTypesRoutes = require('../routes/serviceTypes');
 const vehicleRoutes = require('../routes/vehicles');
@@ -32,19 +31,20 @@ const employeesRoutes = require('../routes/employees')
 // Modelo==>Sync DB ==> Seed ==> rutas ==>LOG AL FINAL del backend ==>Front ==> 
 
 
-app.use('/services',serviceRoutes);
-app.use('/service-statuses',serviceStatusRoutes);
-app.use('/claims',claimRoutes);
-app.use('/clients', clientRoutes);
-app.use('/installations',installationRoutes);
-app.use('/mobiles',mobileRoutes);
-app.use('/materials',materialRoutes);
-app.use('/usedMaterialsAttentions',usedMaterialsAttentionsRoutes);
-app.use('/auth',authRoutes);
-app.use('/users',userRoutes);
-app.use('/servicetypes',serviceTypesRoutes);
-app.use('/vehicles',vehicleRoutes);
-app.use('/employees',employeesRoutes)
+
+app.use('/services', tokenAuth, authorizeRoles(['Técnico', 'Supervisor', 'Administrador']), serviceRoutes);
+app.use('/service-statuses', tokenAuth, authorizeRoles(['Técnico', 'Supervisor', 'Administrador']), serviceStatusRoutes);
+app.use('/claims', tokenAuth, authorizeRoles(['Técnico', 'Supervisor', 'Administrador']), claimRoutes);
+app.use('/clients', tokenAuth, authorizeRoles(['Técnico', 'Supervisor', 'Administrador']), clientRoutes);
+app.use('/installations', tokenAuth, authorizeRoles(['Técnico', 'Supervisor', 'Administrador']), installationRoutes);
+app.use('/mobiles', tokenAuth, authorizeRoles(['Técnico', 'Supervisor', 'Administrador']), mobileRoutes);
+app.use('/materials', tokenAuth, authorizeRoles(['Técnico', 'Supervisor', 'Administrador']), materialRoutes);
+app.use('/usedMaterialsAttentions', tokenAuth, authorizeRoles(['Técnico', 'Supervisor', 'Administrador']), usedMaterialsAttentionsRoutes);
+app.use('/users', userRoutes);
+app.use('/servicetypes', tokenAuth, authorizeRoles(['Técnico', 'Supervisor', 'Administrador']), serviceTypesRoutes);
+app.use('/vehicles', tokenAuth, authorizeRoles(['Técnico', 'Supervisor', 'Administrador']), vehicleRoutes);
+app.use('/employees', tokenAuth, authorizeRoles(['Técnico', 'Supervisor', 'Administrador']), employeesRoutes);
+
 
 
 

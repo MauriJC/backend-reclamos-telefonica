@@ -1,8 +1,9 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { User, Role } = require('../../src/model'); // Ajusta la ruta según sea necesario
+require('dotenv').config();
 
-const JWT_SECRET = 'your_jwt_secret'; // Cambia esto a una clave secreta más segura
+const JWT_SECRET = process.env.ACCESS_TOKEN_SECRET;
 
 // Middleware para verificar el token JWT y extraer la información del usuario
 const authenticateToken = async (req, res, next) => {

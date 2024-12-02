@@ -53,7 +53,7 @@ exports.createService = async (req, res) => {
 
 exports.getServiceById = async (req, res) => {
     try {
-        const service = await Service.findByPk(req.params.serviceId);
+        const service = await Service.findByPk(req.params.serviceId, { include: { model: Location } });
         if (service) {
             res.json(service);
         } else {
@@ -127,9 +127,11 @@ exports.getServicesByClientDni = async (req, res) => {
 
 exports.updateService = async (req, res) => {
     try {
+
         const service = await Service.findByPk(req.params.serviceId);
+
         if (service) {
-            await service.update(req.body);
+            await service.update(req.body, { silent: true });
             res.json(service);
         } else {
             res.status(404).json({ error: 'Service not found' });
